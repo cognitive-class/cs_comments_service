@@ -54,16 +54,6 @@ Dir[File.dirname(__FILE__) + '/lib/**/*.rb'].each { |file| require file }
 Dir[File.dirname(__FILE__) + '/models/*.rb'].each { |file| require file }
 Dir[File.dirname(__FILE__) + '/presenters/*.rb'].each { |file| require file }
 
-Elasticsearch::Model.client = Elasticsearch::Client.new(host: CommentService.config[:elasticsearch_host], log: false)
-
-# Ensure Elasticsearch index mappings exist.
-Comment.put_search_index_mapping
-CommentThread.put_search_index_mapping
-
-# Comment out observers until notifications are actually set up properly.
-#Dir[File.dirname(__FILE__) + '/models/observers/*.rb'].each {|file| require file}
-#Mongoid.observers = PostReplyObserver, PostTopicObserver, AtUserObserver
-#Mongoid.instantiate_observers
 
 APIPREFIX = CommentService::API_PREFIX
 DEFAULT_PAGE = 1
