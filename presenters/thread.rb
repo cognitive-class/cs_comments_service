@@ -96,24 +96,26 @@ class ThreadPresenter
   def merge_response_content(content)
     top_level = []
     ancestry = []
-    content.each do |item|
-      item_hash = item.to_hash.merge("children" => [])
-      if item.parent_id.nil?
-        top_level << item_hash
-        ancestry = [item_hash]
-      else
-        while ancestry.length > 0 do
-          if item.parent_id == ancestry.last["id"]
-            ancestry.last["children"] << item_hash
-            ancestry << item_hash
-            break
-          else
-            ancestry.pop
+    self.class.trace_execution_scoped(['CREATE_THREAD_RESPONSES']) do
+      content.each do |item|
+        item_hash = item.to_hash.merge("children" => [])
+        if item.parent_id.nil?
+          top_level << item_hash
+          ancestry = [item_hash]
+        else
+          while ancestry.length > 0 do
+            if item.parent_id == ancestry.last["id"]
+              ancestry.last["children"] << item_hash
+              ancestry << item_hash
+              break
+            else
+              ancestry.pop
+              next
+            end
+          end
+          if ancestry.empty? # invalid parent; ignore item
             next
           end
-        end
-        if ancestry.empty? # invalid parent; ignore item
-          next
         end
       end
     end
